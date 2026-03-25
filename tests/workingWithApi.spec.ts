@@ -1,0 +1,17 @@
+import {test, expect} from '@playwright/test';
+import tags from '../test-data/tags.json'
+
+test.beforeEach( async ({page}) =>{
+    await page.route('*/**/api/tags', async route => {
+        await route.fulfill({
+            body:JSON.stringify(tags)
+        })
+    })
+    await page.goto('https://conduit.bondaracademy.com/')
+})
+
+test('First test to validate the title of the page', async ({page})=> {
+    // page.pause();
+    await expect(page.locator('.navbar-brand')).toHaveText('conduit');
+    // page.pause()
+})
