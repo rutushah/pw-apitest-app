@@ -8,11 +8,8 @@ test.beforeEach( async ({page}) =>{
         })
     })
 
-    await page.goto('https://conduit.bondaracademy.com/')
-    await page.getByText('Sign in').click()
-    await page.getByRole('textbox', {name:'Email'}).fill('rutushah105@gmail.com');
-    await page.getByRole('textbox', {name:'Password'}).fill('Rutu@123');
-    await page.getByRole('button', {name:'Sign in'}).click()
+    
+   
 })
 
 test('First test to validate the title of the page', async ({page})=> {
@@ -41,7 +38,7 @@ test('First test to validate the title of the page', async ({page})=> {
 
 
 
-test.only('Delete article test', async ({page, request}) => {
+test('Delete article test', async ({page, request}) => {
  const response = await request.post('https://conduit-api.bondaracademy.com/api/users/login',{
         data:{
             "user":{
@@ -79,7 +76,42 @@ test.only('Delete article test', async ({page, request}) => {
 })
 
 
-test('Delete the article using API and validate the same on UI', async ({page, request}) => {
+test.only('Create Article', async ({page, request}) => {
+    const response = await request.post('https://conduit-api.bondaracademy.com/api/users/login',{
+        data:{
+            "user":{
+                "email":"rutushah105@gmail.com",
+                "password":"Rutu@123"
+            }
+        }
+    }) 
 
+    const responseBody = await response.json()
+
+    const accessToken = responseBody.user.token
+    await page.getByText('New Article').click();
+    await page.getByRole('textbox', {name:'Article Title'}).fill('Playwright API Test Article');
+    await page.getByRole('textbox', {name:'What\'s this article about?'}).fill('This is the description of the article');
+    await page.getByRole('textbox', {name:'Write your article (in markdown)'}).fill('This is the body of the article');
+    await page.getByRole('button', {name:'Publish Article'}).click();
+    const articlePublishResponse = await page.waitForResponse('https://conduit-api.bondaracademy.com/api/articles/')
+    const articleResponseBody = await articlePublishResponse.json()
+    const slugId = articleResponseBody.article.slug
+
+    await expect(page.locator('.banner h1')).toContainText('Playwright API Test Article')
+
+    await page.getByText('Home').click()
+    await expect(page.locator('app-article-preview h1').first()).toContainText('Playwright API Test Article')
+
+    
+
+    const deleteArticleResponse = await request.delete(`https://conduit-api.bondaracademy.com/api/articles/${slugId}`,{
+        headers:{
+            'Authorization':`Token ${accessToken}`
+        }
+    })
+
+    await expect(deleteArticleResponse.status()).toEqual(204);
+    
 
 })
