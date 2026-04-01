@@ -16,6 +16,9 @@ export default defineConfig({
   use: {
     
     trace: 'on-first-retry',
+    extraHTTPHeaders:{
+      'Authorization':`Token ${process.env.ACCESS_TOKEN}`
+    }
   },
 
   /* Configure projects for major browsers */
@@ -25,7 +28,7 @@ export default defineConfig({
     },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], storageState: '.auth/user.json' },
+      use: { ...devices['Desktop Chrome'], storageState: 'playwright/.auth/user.json', },
       dependencies: ['setup'],
     },
   ],

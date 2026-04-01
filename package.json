@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "This is the playwright framework application for API testing",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test-run":"npx playwright test workingWithApi.spec.ts --headed",
+    "all": "npm run test-run && npx playwright test --headed"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rutushah/pw-apitest-app.git"
